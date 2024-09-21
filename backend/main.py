@@ -2,6 +2,7 @@ import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_login import LoginManager, login_user, login_required, current_user
+from flask_migrate import Migrate
 from api_handlers.huggingface_handler import process_huggingface_request
 from api_handlers.google_nlp_handler import process_google_nlp_request
 from utils.rate_limiter import rate_limit
@@ -18,15 +19,12 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key')
 
 # Initialize extensions
 db.init_app(app)
+migrate = Migrate(app, db)
 login_manager = LoginManager(app)
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
-
-def create_tables():
-    with app.app_context():
-        db.create_all()
 
 @app.route('/')
 def hello():
@@ -90,5 +88,4 @@ def process_api_request():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    create_tables()
     app.run(host='0.0.0.0', port=8000)
