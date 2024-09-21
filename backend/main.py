@@ -9,6 +9,7 @@ from api_handlers.google_nlp_handler import process_google_nlp_request
 from utils.rate_limiter import rate_limit
 from models import db, User, APIUsage
 from datetime import datetime
+from typing import Dict, Any
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -28,7 +29,7 @@ migrate = Migrate(app, db)
 login_manager = LoginManager(app)
 
 @login_manager.user_loader
-def load_user(user_id):
+def load_user(user_id: int) -> User:
     return User.query.get(int(user_id))
 
 @app.route('/')
@@ -38,10 +39,10 @@ def hello():
 @app.route('/api/register', methods=['POST'])
 def register():
     logger.info("Received registration request")
-    data = request.json
-    username = data.get('username')
-    email = data.get('email')
-    password = data.get('password')
+    data: Dict[str, Any] = request.json or {}
+    username = data.get('username', '')
+    email = data.get('email', '')
+    password = data.get('password', '')
 
     logger.info(f"Attempting to register user: {username}")
 
@@ -63,9 +64,9 @@ def register():
 @app.route('/api/login', methods=['POST'])
 def login():
     logger.info("Received login request")
-    data = request.json
-    user = User.query.filter_by(username=data.get('username')).first()
-    if user and user.check_password(data.get('password')):
+    data: Dict[str, Any] = request.json or {}
+    user = User.query.filter_by(username=data.get('username', '')).first()
+    if user and user.check_password(data.get('password', '')):
         login_user(user)
         logger.info(f"User '{user.username}' logged in successfully")
         return jsonify({'message': 'Logged in successfully'}), 200
@@ -76,9 +77,9 @@ def login():
 @login_required
 @rate_limit(limit=10, per=60)  # 10 requests per minute
 def process_api_request():
-    data = request.json
-    api_choice = data.get('api')
-    text = data.get('text')
+    data: Dict[str, Any] = request.json or {}
+    api_choice = data.get('api', '')
+    text = data.get('text', '')
 
     if not api_choice or not text:
         logger.warning("API request failed: Missing api choice or text")
@@ -104,6 +105,37 @@ def process_api_request():
     except Exception as e:
         logger.error(f"API request failed: {str(e)}")
         return jsonify({'error': str(e)}), 500
+
+@app.route('/api/update_profile', methods=['PUT'])
+@login_required
+def update_profile():
+    logger.info(f"Received profile update request for user '{current_user.username}'")
+    data: Dict[str, Any] = request.json or {}
+
+    try:
+        if 'huggingface_api_key' in data:
+            current_user.huggingface_api_key = data['huggingface_api_key']
+        if 'google_nlp_api_key' in data:
+            current_user.google_nlp_api_key = data['google_nlp_api_key']
+
+        db.session.commit()
+        logger.info(f"Profile updated successfully for user '{current_user.username}'")
+        return jsonify({'message': 'Profile updated successfully'}), 200
+    except Exception as e:
+        logger.error(f"Profile update failed for user '{current_user.username}': {str(e)}")
+        return jsonify({'error': 'Failed to update profile'}), 500
+
+@app.route('/api/profile', methods=['GET'])
+@login_required
+def get_profile():
+    logger.info(f"Received profile request for user '{current_user.username}'")
+    return jsonify({
+        'username': current_user.username,
+        'email': current_user.email,
+        'api_calls': current_user.api_calls,
+        'has_huggingface_api_key': bool(current_user.huggingface_api_key),
+        'has_google_nlp_api_key': bool(current_user.google_nlp_api_key)
+    }), 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000)
