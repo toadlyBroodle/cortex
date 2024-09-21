@@ -22,7 +22,7 @@ const Auth = ({ setIsLoggedIn }) => {
       if (response.status === 200 || response.status === 201) {
         setSuccess(isLogin ? 'Logged in successfully!' : 'Registered successfully!');
         setTimeout(() => {
-          setIsLoggedIn(true);
+          setIsLoggedIn(isLogin ? username : '');
         }, 1500);
       }
     } catch (err) {

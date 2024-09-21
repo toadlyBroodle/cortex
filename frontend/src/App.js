@@ -13,6 +13,7 @@ function App() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState('');
 
   const handleApiChange = (api) => {
     setSelectedApi(api);
@@ -32,12 +33,19 @@ function App() {
       setError(err.response?.data?.error || 'An error occurred');
       if (err.response?.status === 401) {
         setIsLoggedIn(false);
+        setUsername('');
       }
     }
   };
 
+  const handleLogin = (loggedInUsername) => {
+    setIsLoggedIn(true);
+    setUsername(loggedInUsername);
+  };
+
   const handleLogout = () => {
     setIsLoggedIn(false);
+    setUsername('');
   };
 
   return (
@@ -46,7 +54,7 @@ function App() {
         <h1>API Integration App</h1>
         {isLoggedIn ? (
           <>
-            <Navigation onLogout={handleLogout} />
+            <Navigation onLogout={handleLogout} username={username} />
             <Routes>
               <Route path="/" element={
                 <>
@@ -62,7 +70,7 @@ function App() {
             </Routes>
           </>
         ) : (
-          <Auth setIsLoggedIn={setIsLoggedIn} />
+          <Auth setIsLoggedIn={handleLogin} />
         )}
       </div>
     </Router>
