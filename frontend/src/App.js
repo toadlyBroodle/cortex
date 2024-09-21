@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import ApiSelector from './components/ApiSelector';
 import InputForm from './components/InputForm';
 import ResultDisplay from './components/ResultDisplay';
 import Auth from './components/Auth';
+import Navigation from './components/Navigation';
 import './App.css';
 
 function App() {
@@ -34,20 +36,36 @@ function App() {
     }
   };
 
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+  };
+
   return (
-    <div className="App">
-      <h1>API Integration App</h1>
-      {isLoggedIn ? (
-        <>
-          <ApiSelector selectedApi={selectedApi} onApiChange={handleApiChange} />
-          <InputForm onSubmit={handleSubmit} />
-          {error && <p className="error">{error}</p>}
-          <ResultDisplay result={result} />
-        </>
-      ) : (
-        <Auth setIsLoggedIn={setIsLoggedIn} />
-      )}
-    </div>
+    <Router>
+      <div className="App">
+        <h1>API Integration App</h1>
+        {isLoggedIn ? (
+          <>
+            <Navigation onLogout={handleLogout} />
+            <Routes>
+              <Route path="/" element={
+                <>
+                  <ApiSelector selectedApi={selectedApi} onApiChange={handleApiChange} />
+                  <InputForm onSubmit={handleSubmit} />
+                  {error && <p className="error">{error}</p>}
+                  <ResultDisplay result={result} />
+                </>
+              } />
+              <Route path="/api-selection" element={<ApiSelector selectedApi={selectedApi} onApiChange={handleApiChange} />} />
+              <Route path="/usage-dashboard" element={<h2>Usage Dashboard (Coming Soon)</h2>} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </>
+        ) : (
+          <Auth setIsLoggedIn={setIsLoggedIn} />
+        )}
+      </div>
+    </Router>
   );
 }
 
