@@ -8,8 +8,11 @@ from api_handlers.huggingface_handler import process_huggingface_request
 from api_handlers.google_nlp_handler import process_google_nlp_request
 from utils.rate_limiter import rate_limit
 from models import db, User, APIUsage
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Dict, Any
+from sqlalchemy import func
+import jwt
+from functools import wraps
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -31,6 +34,21 @@ login_manager = LoginManager(app)
 @login_manager.user_loader
 def load_user(user_id: int) -> User:
     return User.query.get(int(user_id))
+
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = request.headers.get('Authorization')
+        if not token:
+            return jsonify({'error': 'Token is missing'}), 401
+        try:
+            token = token.split()[1]  # Remove 'Bearer ' prefix
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
+            current_user = User.query.get(data['user_id'])
+        except:
+            return jsonify({'error': 'Token is invalid'}), 401
+        return f(current_user, *args, **kwargs)
+    return decorated
 
 @app.route('/')
 def hello():
@@ -67,16 +85,19 @@ def login():
     data: Dict[str, Any] = request.json or {}
     user = User.query.filter_by(username=data.get('username', '')).first()
     if user and user.check_password(data.get('password', '')):
-        login_user(user)
+        token = jwt.encode({
+            'user_id': user.id,
+            'exp': datetime.utcnow() + timedelta(hours=24)
+        }, app.config['SECRET_KEY'], algorithm="HS256")
         logger.info(f"User '{user.username}' logged in successfully")
-        return jsonify({'message': 'Logged in successfully'}), 200
+        return jsonify({'message': 'Logged in successfully', 'token': token}), 200
     logger.warning("Login failed: Invalid username or password")
     return jsonify({'error': 'Invalid username or password'}), 401
 
 @app.route('/api/process', methods=['POST'])
-@login_required
+@token_required
 @rate_limit(limit=10, per=60)  # 10 requests per minute
-def process_api_request():
+def process_api_request(current_user):
     data: Dict[str, Any] = request.json or {}
     api_choice = data.get('api', '')
     text = data.get('text', '')
@@ -107,8 +128,8 @@ def process_api_request():
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/update_profile', methods=['PUT'])
-@login_required
-def update_profile():
+@token_required
+def update_profile(current_user):
     logger.info(f"Received profile update request for user '{current_user.username}'")
     data: Dict[str, Any] = request.json or {}
 
@@ -126,8 +147,8 @@ def update_profile():
         return jsonify({'error': 'Failed to update profile'}), 500
 
 @app.route('/api/profile', methods=['GET'])
-@login_required
-def get_profile():
+@token_required
+def get_profile(current_user):
     logger.info(f"Received profile request for user '{current_user.username}'")
     return jsonify({
         'username': current_user.username,
@@ -136,6 +157,32 @@ def get_profile():
         'has_huggingface_api_key': bool(current_user.huggingface_api_key),
         'has_google_nlp_api_key': bool(current_user.google_nlp_api_key)
     }), 200
+
+@app.route('/api/usage', methods=['GET'])
+@token_required
+def get_usage(current_user):
+    logger.info(f"Received usage data request for user '{current_user.username}'")
+    try:
+        usage_data = db.session.query(
+            APIUsage.api_name,
+            func.count(APIUsage.id).label('usage_count'),
+            func.max(APIUsage.timestamp).label('last_used')
+        ).filter_by(user_id=current_user.id).group_by(APIUsage.api_name).all()
+
+        result = [
+            {
+                'api_name': item.api_name,
+                'usage_count': item.usage_count,
+                'last_used': item.last_used.isoformat()
+            }
+            for item in usage_data
+        ]
+
+        logger.info(f"Usage data retrieved successfully for user '{current_user.username}': {result}")
+        return jsonify(result), 200
+    except Exception as e:
+        logger.error(f"Failed to retrieve usage data for user '{current_user.username}': {str(e)}")
+        return jsonify({'error': 'Failed to retrieve usage data'}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000)

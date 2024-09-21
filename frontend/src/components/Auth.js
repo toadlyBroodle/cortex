@@ -21,6 +21,10 @@ const Auth = ({ setIsLoggedIn }) => {
       const response = await axios.post(endpoint, data);
       if (response.status === 200 || response.status === 201) {
         setSuccess(isLogin ? 'Logged in successfully!' : 'Registered successfully!');
+        if (isLogin) {
+          // Store the authentication token in localStorage
+          localStorage.setItem('authToken', response.data.token);
+        }
         setTimeout(() => {
           setIsLoggedIn(isLogin ? username : '');
         }, 1500);

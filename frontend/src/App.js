@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { HashRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import ApiSelector from './components/ApiSelector';
 import InputForm from './components/InputForm';
@@ -7,6 +7,7 @@ import ResultDisplay from './components/ResultDisplay';
 import Auth from './components/Auth';
 import Navigation from './components/Navigation';
 import UserProfile from './components/UserProfile';
+import UsageDashboard from './components/UsageDashboard';
 import './App.css';
 
 function App() {
@@ -67,7 +68,7 @@ function App() {
               } />
               <Route path="/api-selection" element={<ApiSelector selectedApi={selectedApi} onApiChange={handleApiChange} />} />
               <Route path="/profile" element={<UserProfile />} />
-              <Route path="/usage-dashboard" element={<h2>Usage Dashboard (Coming Soon)</h2>} />
+              <Route path="/usage-dashboard" element={<UsageDashboard />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </>
