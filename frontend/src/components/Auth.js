@@ -7,19 +7,28 @@ const Auth = ({ setIsLoggedIn }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
+    setIsLoading(true);
     try {
       const endpoint = isLogin ? '/api/login' : '/api/register';
       const data = isLogin ? { username, password } : { username, email, password };
       const response = await axios.post(endpoint, data);
       if (response.status === 200 || response.status === 201) {
-        setIsLoggedIn(true);
+        setSuccess(isLogin ? 'Logged in successfully!' : 'Registered successfully!');
+        setTimeout(() => {
+          setIsLoggedIn(true);
+        }, 1500);
       }
     } catch (err) {
       setError(err.response?.data?.error || 'An error occurred');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -50,12 +59,15 @@ const Auth = ({ setIsLoggedIn }) => {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <button type="submit">{isLogin ? 'Login' : 'Register'}</button>
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? 'Processing...' : (isLogin ? 'Login' : 'Register')}
+        </button>
       </form>
       {error && <p className="error">{error}</p>}
+      {success && <p className="success">{success}</p>}
       <p>
         {isLogin ? "Don't have an account? " : "Already have an account? "}
-        <button onClick={() => setIsLogin(!isLogin)}>
+        <button onClick={() => setIsLogin(!isLogin)} disabled={isLoading}>
           {isLogin ? 'Register' : 'Login'}
         </button>
       </p>
