@@ -19,7 +19,7 @@ function App() {
   const handleSubmit = async (text) => {
     try {
       setError(null);
-      const response = await axios.post('http://localhost:8000/api/process', {
+      const response = await axios.post('/api/process', {
         api: selectedApi,
         text: text,
       });
