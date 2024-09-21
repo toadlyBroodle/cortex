@@ -1,38 +1,34 @@
-import os
-import logging
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask_cors import CORS
-from flask_login import LoginManager, login_user, login_required, current_user
-from flask_migrate import Migrate
+from datetime import datetime, timedelta
+import jwt
+import os
+from functools import wraps
+import logging
+from typing import Dict, Any, Optional
+from sqlalchemy import func
+from models import User, APIUsage
 from api_handlers.huggingface_handler import process_huggingface_request
 from api_handlers.google_nlp_handler import process_google_nlp_request
 from utils.rate_limiter import rate_limit
-from models import db, User, APIUsage
-from datetime import datetime, timedelta
-from typing import Dict, Any
-from sqlalchemy import func
-import jwt
-from functools import wraps
 
-# Set up logging
+app = Flask(__name__, static_folder='../frontend/build', static_url_path='/')
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///app.db')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+login_manager = LoginManager(app)
+CORS(app)
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = Flask(__name__)
-CORS(app)
-
-# Database configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key')
-
-# Initialize extensions
-db.init_app(app)
-migrate = Migrate(app, db)
-login_manager = LoginManager(app)
-
 @login_manager.user_loader
-def load_user(user_id: int) -> User:
+def load_user(user_id: int) -> Optional[User]:
     return User.query.get(int(user_id))
 
 def token_required(f):
@@ -51,8 +47,8 @@ def token_required(f):
     return decorated
 
 @app.route('/')
-def hello():
-    return "Hello, API Integration App is running!"
+def serve():
+    return send_from_directory(app.static_folder, 'index.html')
 
 @app.route('/api/register', methods=['POST'])
 def register():
@@ -183,6 +179,10 @@ def get_usage(current_user):
     except Exception as e:
         logger.error(f"Failed to retrieve usage data for user '{current_user.username}': {str(e)}")
         return jsonify({'error': 'Failed to retrieve usage data'}), 500
+
+@app.errorhandler(404)
+def not_found(e):
+    return app.send_static_file('index.html')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000)
