@@ -10,14 +10,16 @@ import logging
 from typing import Dict, Any, Optional
 from sqlalchemy import func
 
-db = SQLAlchemy()
-
 app = Flask(__name__, static_folder='../frontend/build', static_url_path='/')
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///app.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-db.init_app(app)
+db = SQLAlchemy()
+
+with app.app_context():
+    db.init_app(app)
+    db.create_all()
 
 login_manager = LoginManager(app)
 CORS(app)
