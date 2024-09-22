@@ -25,9 +25,14 @@
   cursor: not-allowed;
 }
 
+.chart-container {
+  margin-bottom: 30px;
+}
+
 .usage-dashboard table {
   width: 100%;
   border-collapse: collapse;
+  margin-top: 20px;
 }
 
 .usage-dashboard th,
