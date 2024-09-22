@@ -1,0 +1,81 @@
+[13:23:21.587] Log Level: 2
+[13:23:21.590] VS Code version: 0.41.2
+[13:23:21.590] Remote-SSH version: remote-ssh@0.113.1
+[13:23:21.591] win32 x64
+[13:23:21.637] SSH Resolver called for "ssh-remote+5713a22d-dae6-410d-9d1e-86ab8b165df6@5713a22d-dae6-410d-9d1e-86ab8b165df6-00-2cq8fpuus30he.riker.replit.dev:22", attempt 1
+[13:23:21.637] "remote.SSH.useLocalServer": false
+[13:23:21.637] "remote.SSH.useExecServer": true
+[13:23:21.637] "remote.SSH.showLoginTerminal": false
+[13:23:21.637] "remote.SSH.remotePlatform": {}
+[13:23:21.637] "remote.SSH.path": undefined
+[13:23:21.637] "remote.SSH.configFile": undefined
+[13:23:21.637] "remote.SSH.useFlock": true
+[13:23:21.637] "remote.SSH.lockfilesInTmp": false
+[13:23:21.638] "remote.SSH.localServerDownload": auto
+[13:23:21.638] "remote.SSH.remoteServerListenOnSocket": false
+[13:23:21.638] "remote.SSH.showLoginTerminal": false
+[13:23:21.638] "remote.SSH.defaultExtensions": []
+[13:23:21.638] "remote.SSH.loglevel": 2
+[13:23:21.638] "remote.SSH.enableDynamicForwarding": true
+[13:23:21.638] "remote.SSH.enableRemoteCommand": false
+[13:23:21.638] "remote.SSH.serverPickPortsFromRange": {}
+[13:23:21.638] "remote.SSH.serverInstallPath": {}
+[13:23:21.638] "remote.SSH.permitPtyAllocation": false
+[13:23:21.638] "remote.SSH.preferredLocalPortRange: undefined
+[13:23:21.638] "remote.SSH.useCurlAndWgetConfigurationFiles: false
+[13:23:21.645] SSH Resolver called for host: 5713a22d-dae6-410d-9d1e-86ab8b165df6@5713a22d-dae6-410d-9d1e-86ab8b165df6-00-2cq8fpuus30he.riker.replit.dev
+[13:23:21.645] Setting up SSH remote "5713a22d-dae6-410d-9d1e-86ab8b165df6-00-2cq8fpuus30he.riker.replit.dev"
+[13:23:21.648] Using commit id "297991d169fa3a11975c5aa95adc69be73250c70" and quality "stable" for server
+[13:23:21.650] Install and start server if needed
+[13:23:22.928] Checking ssh with "C:\Program Files\Common Files\Oracle\Java\javapath\ssh.exe -V"
+[13:23:22.931] Got error from ssh: spawn C:\Program Files\Common Files\Oracle\Java\javapath\ssh.exe ENOENT
+[13:23:22.931] Checking ssh with "C:\Program Files (x86)\Common Files\Oracle\Java\java8path\ssh.exe -V"
+[13:23:22.932] Got error from ssh: spawn C:\Program Files (x86)\Common Files\Oracle\Java\java8path\ssh.exe ENOENT
+[13:23:22.932] Checking ssh with "C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\iCLS\ssh.exe -V"
+[13:23:22.934] Got error from ssh: spawn C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\iCLS\ssh.exe ENOENT
+[13:23:22.934] Checking ssh with "C:\Program Files\Intel\Intel(R) Management Engine Components\iCLS\ssh.exe -V"
+[13:23:22.935] Got error from ssh: spawn C:\Program Files\Intel\Intel(R) Management Engine Components\iCLS\ssh.exe ENOENT
+[13:23:22.935] Checking ssh with "C:\Windows\system32\ssh.exe -V"
+[13:23:22.936] Got error from ssh: spawn C:\Windows\system32\ssh.exe ENOENT
+[13:23:22.936] Checking ssh with "C:\Windows\ssh.exe -V"
+[13:23:22.937] Got error from ssh: spawn C:\Windows\ssh.exe ENOENT
+[13:23:22.937] Checking ssh with "C:\Windows\System32\Wbem\ssh.exe -V"
+[13:23:22.938] Got error from ssh: spawn C:\Windows\System32\Wbem\ssh.exe ENOENT
+[13:23:22.938] Checking ssh with "C:\Windows\System32\WindowsPowerShell\v1.0\ssh.exe -V"
+[13:23:22.939] Got error from ssh: spawn C:\Windows\System32\WindowsPowerShell\v1.0\ssh.exe ENOENT
+[13:23:22.939] Checking ssh with "C:\Windows\System32\OpenSSH\ssh.exe -V"
+[13:23:22.962] > OpenSSH_for_Windows_8.1p1, LibreSSL 3.0.2
+
+[13:23:22.964] Remote command length: 4974/8192 characters
+[13:23:22.964] Running script with connection command: "C:\Windows\System32\OpenSSH\ssh.exe" -T -D 59038 -p 22 "5713a22d-dae6-410d-9d1e-86ab8b165df6@5713a22d-dae6-410d-9d1e-86ab8b165df6-00-2cq8fpuus30he.riker.replit.dev" powershell
+[13:23:22.966] Terminal shell path: C:\WINDOWS\System32\cmd.exe
+[13:23:23.358] > ]0;C:\WINDOWS\System32\cmd.exe
+[13:23:23.358] Got some output, clearing connection timeout
+[13:23:23.936] > W
+[13:23:23.951] > Welcome to the Replit SSH Proxy.
+> 
+> Visit https://docs.replit.com/replit-workspace/ssh to learn more about SSH on Re
+> plit.
+> 
+[13:23:24.356] > 5713a22d-dae6-410d-9d1e-86ab8b165df6@5713a22d-dae6-410d-9d1e-86ab8b165df6-00-2cq
+> 8fpuus30he.riker.replit.dev's password:
+[13:23:24.357] Showing password prompt
+[13:24:06.822] Got password response
+[13:24:06.822] "install" wrote data to terminal: ""
+[13:24:06.847] > 
+[13:24:06.920] > Permission denied, please try again.
+[13:24:06.936] > 5713a22d-dae6-410d-9d1e-86ab8b165df6@5713a22d-dae6-410d-9d1e-86ab8b165df6-00-2cq
+> 8fpuus30he.riker.replit.dev's password:
+[13:24:06.937] Showing password prompt
+[13:24:08.070] Got password response
+[13:24:08.070] "install" wrote data to terminal: ""
+[13:24:08.087] > 
+[13:24:08.164] > Permission denied, please try again.
+[13:24:08.181] > 5713a22d-dae6-410d-9d1e-86ab8b165df6@5713a22d-dae6-410d-9d1e-86ab8b165df6-00-2cq
+> 8fpuus30he.riker.replit.dev's password:
+[13:24:08.181] Showing password prompt
+[13:24:08.790] Got password response
+[13:24:08.790] "install" wrote data to terminal: ""
+[13:24:08.814] > 
+[13:24:08.875] > 5713a22d-dae6-410d-9d1e-86ab8b165df6@5713a22d-dae6-410d-9d1e-86ab8b165df6-00-2cq
+> 8fpuus30he.riker.replit.dev: Permission denied (password,publickey).
