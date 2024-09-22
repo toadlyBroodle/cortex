@@ -1,5 +1,5 @@
 {
-  "name": "llama-query-vm",
+  "name": "cortex",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {

@@ -72,7 +72,7 @@ function App() {
   return (
     <Router>
       <div className="App">
-        <h1>API Integration App</h1>
+        <h1>Cortex</h1>
         {isLoggedIn ? (
           <>
             <Navigation onLogout={handleLogout} username={username} />
