@@ -15,11 +15,7 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///app.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-db = SQLAlchemy()
-
-with app.app_context():
-    db.init_app(app)
-    db.create_all()
+db = SQLAlchemy(app)
 
 login_manager = LoginManager(app)
 CORS(app)
